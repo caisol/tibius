@@ -1,0 +1,76 @@
+/*===================
+Color : GREEN 
+*==================*/
+
+.proclinic-bg {
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #0f418c, #00a1e4);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #0f418c, #00a1e4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.proclinic-text-color{
+	color: #0f418c;
+}
+.pagination .page-link {
+	color: #0f418c;
+}
+.pagination .page-item.active .page-link {
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	border-color: #ffffff;
+}
+.btn-primary {
+    background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    border-color: #ffffff;
+}
+.btn-primary:hover {
+    background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	opacity: 0.75;
+}
+.text-round {
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.btn-outline-primary {
+    color: #0f418c;
+    border-color: #ffffff;
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.btn-hero-primary{
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	border-color: #fff;
+}
+.media h5{
+	color: #0f418c;
+}
+#faq2 .block-header{
+	background: #0f418c;  /* fallback for old browsers */
+	background: -webkit-linear-gradient(to right, #00a1e4, #0f418c);  /* Chrome 10-25, Safari 5.1-6 */
+	background: linear-gradient(to right, #00a1e4, #0f418c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+#faq1 .block-header {
+    color: #0f418c;
+}
+.widget-title{
+	color: #0f418c;
+}
+.pricing-h2{
+	color: #0f418c;
+}
+.pagination .page-link [class^="ti-"], [class*=" ti-"] {
+	color: #0f418c;
+}
+.block-title-new [class^="ti-"], .block-title-new [class*=" ti-"]{
+	color: #0f418c;
+}
