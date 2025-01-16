@@ -69,6 +69,7 @@
 				<div class="col-md-12">
 					<div class="row">
 						<h4>Tracking</h4>
+						<p><strong>Tracking Return# <?php if(isset($tracking_number) && $tracking_number!=""){?><a style="color:#007bff !important;" href="<?php echo base_url("shipping-detail-return/".$order_id);?>"><?php echo isset($tracking_number)?$tracking_number:"N/A"; ?></a><?php }else{ echo "N/A";} ?></strong></p>
 						<p><strong>Tracking# <?php if(isset($tracking_number) && $tracking_number!=""){?><a style="color:#007bff !important;" href="<?php echo base_url("shipping-detail/".$order_id);?>"><?php echo isset($tracking_number)?$tracking_number:"N/A"; ?></a><?php }else{ echo "N/A";} ?></strong></p>
 						<table id="example2" class="table table-bordered table-hover order-list">
 							<tbody id="myInput">
@@ -137,7 +138,16 @@
 						<table id="example2" class="table table-bordered table-hover order-list">
 							<tbody id="myInput">
 							 <tr>
-								<td  id="order_address" ><?php echo isset($address)?$address:""; ?></td>
+                                 <?php $ship_to = !empty($return_shipment_response->ship_to)?$return_shipment_response->ship_to:array();
+                                 $address_name = !empty($ship_to->name)?$ship_to->name:"";
+                                 $address_address_line1 = !empty($ship_to->address_line1)?$ship_to->address_line1:"";
+                                 $address_address_line2 = !empty($ship_to->address_line2)?$ship_to->address_line2:"";
+                                 $address_city_locality = !empty($ship_to->city_locality)?$ship_to->city_locality:"";
+                                 $address_state_province = !empty($ship_to->state_province)?$ship_to->state_province:"";
+                                 $address_postal_code = !empty($ship_to->postal_code)?$ship_to->postal_code:"";
+                                 $address_country_code = !empty($ship_to->country_code)?$ship_to->country_code:"";
+                                 ?>
+								<td  id="order_address" ><?php echo $address_name." ".$address_address_line1." ".$address_address_line2." ".$address_city_locality." ".$address_state_province." ".$address_postal_code." ".$address_country_code; ?></td>
 								
 							  </tr>
 							  

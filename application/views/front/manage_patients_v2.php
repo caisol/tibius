@@ -8,7 +8,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-2">
-            <h1 class="m-0">Patients List</h1>
+            <h1 class="m-0">Recipients List</h1>
           </div><!-- /.col -->
           <div class="col-md-6 search-bar">
             <form class="form-inline">
@@ -31,7 +31,7 @@
 		  </div>
 		  
 		 <div class="col-md-2 order-add">
-			<button type="button" class="btn btn-primary" onclick="clearForm();"data-toggle="modal" data-target="#modal-primary">+ Add Patient</button>
+			<button type="button" class="btn btn-primary" onclick="clearForm();"data-toggle="modal" data-target="#modal-primary">+ Add Recipient</button>
 			<!--<button type="button" class="btn btn-primary" onclick="window.location.href='<?php echo base_url("add-patient");?>'" >+ Add Patient</button>-->
 		  </div>
 		  <div style="display:none;" id="success_div_top" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -63,7 +63,7 @@
         <div class="modal-dialog">
           <div class="modal-content bg-white">
             <div class="modal-header">
-              <h4 class="modal-title">Add Patients</h4>
+              <h4 class="modal-title">Add Recipients</h4>
 			  
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -79,7 +79,7 @@
 
 									  <!-- text input -->
 									  <div class="form-group">
-										<label for="patient_id">Patient ID</label>
+										<label for="patient_id">Recipient ID</label>
 										<input style="color: white;" disabled type="text" placeholder="" value="<?php echo isset($patients->id)?sprintf('%09d', $patients->id):""; ?>" class="form-control" id="patient_id">
 									  </div>
 								</div>
@@ -166,7 +166,7 @@
 								
 								<div class="row">
 									<!--<p><a href="#" id="patientInformationTitle">Patient Information</a><i class="fas fa-angle-right right"></i></p>-->
-									<p><a href="#" id="addressTitle">Patient Address Details</a><i class="fas fa-angle-right right"></i></p>
+									<p><a href="#" id="addressTitle">Recipient Address Details</a><i class="fas fa-angle-right right"></i></p>
 								</div>
 
 							</div>
@@ -174,7 +174,7 @@
 							
 							<div id="paddressDetails" class="collapse " aria-labelledby="paddressDetailsTitle" data-parent="#accordion">
 								<div class="row">
-								<h4 class="modal-title">Patient Address Details</h4>
+								<h4 class="modal-title">Recipient Address Details</h4>
 									<div class="col-sm-3">
 										<div class="form-group">
 											<label for="patient_address_type">Address Type</label>
@@ -512,10 +512,10 @@
                   <thead>
                   <tr>
                     
-					<th>Patient ID</th>
-					<th>Patient's Department</th>
-					<th>Patient's Name</th>
-					<th>Parent's Name</th>
+					<th>Recipient ID</th>
+					<th>Recipient's Department</th>
+					<th>Recipient's Name</th>
+					<th>Recipient's Name</th>
 					<th>Phone Number</th>
 					<th>Email Address</th>
 					<th>Options</th>

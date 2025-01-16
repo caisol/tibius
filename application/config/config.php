@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $protocol = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ) ? 'https' : 'http';
-$config['base_url']	= $protocol.'://'.$_SERVER['SERVER_NAME'].'/medzahv1/index.php/';
+$config['base_url']	= $protocol.'://'.'payroll.caisol.com/';
 //$config['base_url']	= 'http://localhost/mdv1/';
 
 /*
@@ -593,7 +593,7 @@ function callAPI($method, $url, $data,$api_name=''){
 				$data = "[".json_encode($data)."]";
 			}
 		}
-		
+//d($data,1);
 	   $curl = curl_init();
 	   			 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 	   switch ($method){
@@ -614,11 +614,17 @@ function callAPI($method, $url, $data,$api_name=''){
 	   }
 	   // OPTIONS:
 	   curl_setopt($curl, CURLOPT_URL, $url);
-	   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+	   /*curl_setopt($curl, CURLOPT_HTTPHEADER, array(
 		  'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5MmU4YjY4Yi0xZTczLTQ5NWItYTU1NC0wMWM3YTczOWQ2ODciLCJqdGkiOiI1ZWU0ODEzMWVjZGY5MzRjZWI4ZGJmMWRkYjgxMmEwOGFlOTczYWVjNDM3Yzc1NGNmMTM4Mjc4Mzc1ZThiZThhMjhhMTliYmJiODMzN2IxMyIsImlhdCI6MTYyMDgyNjExMCwibmJmIjoxNjIwODI2MTEwLCJleHAiOjE2NTIzNjIxMTAsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.cHrhVgbJU7kXsMvyz9ehwAECAMTAN7iPW2ffMA0zT81NirKJrLe5IYQnmWNdt6tQ-LIqb06dZcyLCHqo6cm5ItQcZLxqAjD_xawLV70BHNuSidI9IjnorySV7NUhUNFxW7JmCRf2cAwQqzLhsI26HBYP_T4JflwvklxHqwoV79fsKqdhFHmMb0xMSufcgv6YVQvEvwXW7oepLFRXrxvF66TBcW1G0d9E3cxbsi3QZgrZ3TA08FJ7G__rKO0HLoNSG6JI-rI1ynX9O8fVgeTIj0SmCfsfKeq_aTIIA7xHP4S0rxktwSIX4wh7PEWuFFNwR4fnDQmdCuTRRsKzMG70C6G_hKdDj3dWaB_km2LR6mrmIQjluc47b0tXRUDoGxZAM25TFVhdOG0irA5L9s5q-1jPyO_9JlGDs15QiOO-CJdaayOeie57EiG71fl6NcRmyebelUnxv0kP4o2yO4FY8qXfeAr-RBex2fTrbsTQi6AWM15R154UFeyWGtIdZgeNpjqRckfQuOyeHEYjHPZkDuLNjCbonJSHpUKjnP761r3CllBTJIJeiu-ONu1mIqpnjWLe6AgFEh9TpSgFfaDJXyYjwrT7LunBGZKXl5D64zi9tJowtpWxSd7AgujEaENG5Rk-RyfkWUCzqtY_miHPdx5FVmeI9mOFU1FhKaRB43c',
 		  'Content-Type: application/json',
+	   ));*/
+	   curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+		  'API-Key: TEST_vYRvAega6qK2XUHsz0p9JaId4IgCcA/VBJHlkQ+YXJs',
+		  'Content-Type: application/json',
+          'Transfer-Encoding: chunked'
 	   ));
 	   curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+	   curl_setopt($curl, CURLOPT_VERBOSE, 1);
 	   curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 	   // EXECUTE:
 	   $result = curl_exec($curl);

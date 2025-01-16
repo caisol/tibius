@@ -119,7 +119,7 @@ class Order extends CI_Controller {
 		
 		//$data["carriers"]  = $this->listCarriers();
 		
-		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'patients',array('status'=>1));
+		$query = $this->db->order_by('id', 'DESC')->get_where('recipients',array('status'=>1));
 		$data['patients'] = $patients =  $query->result();
 		
 		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'devices',array('status'=>1,'product_status'=>0));
@@ -167,9 +167,8 @@ class Order extends CI_Controller {
 			$data['carriers'] = $carriers =  $query->result();
 			if(isset($carriers) && empty($carriers))
 			{
-				$responseListCarriersApi = callAPI("GET","http://13.48.249.120/api/shipengine/listCarriers",array(),"listCarriers");
+				$responseListCarriersApi = callAPI("GET","https://api.shipengine.com/v1/carriers",array(),"listCarriers");
 				$responseListCarriers = json_decode($responseListCarriersApi);
-				
 				if(isset($responseListCarriers) && isset($responseListCarriers->carriers) && !empty($responseListCarriers->carriers))
 				{
 					$carriers = $responseListCarriers->carriers;
@@ -224,7 +223,7 @@ class Order extends CI_Controller {
 		
 		//$data["carriers"]  = $this->listCarriers();
 		
-		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'patients',array('status'=>1));
+		$query = $this->db->order_by('id', 'DESC')->get_where('recipients',array('status'=>1));
 		$data['patients'] = $patients =  $query->result();
 		
 		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'devices',array('status'=>1,'product_status'=>0));
@@ -237,7 +236,7 @@ class Order extends CI_Controller {
 		
 		
 		
-		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
+		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status,o.tracking_number,o.return_tracking_number FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
 		$orders = $query->result();
 		
 		$data['orders'] = isset($orders)?$orders:array();
@@ -257,7 +256,7 @@ class Order extends CI_Controller {
 	public function submitOrder()
 	{
 		$this->load->library('form_validation');
-		
+
 		$existing_patients   = $this->input->post("existing_patients");
 		$existing_devices   = $this->input->post("existing_devices");
 		$order_status   = $this->input->post("order_status");
@@ -280,6 +279,7 @@ class Order extends CI_Controller {
 		$days_prescribed   = $this->input->post("days_prescribed");
 		$devices_prescribed   = $this->input->post("devices_prescribed");
 		$rush_indicator   = $this->input->post("rush_indicator");
+		$return_label   = $this->input->post("return_label");
 		$instructions   = $this->input->post("instructions");
 		$directions   = $this->input->post("directions");
 		$order_detail   = $this->input->post("order_detail");
@@ -299,73 +299,95 @@ class Order extends CI_Controller {
 		
 		if ($data['status'] === TRUE)
 		{
-			
 			if(isset($order_id) && $order_id>0)
 			{
 				$recordOrder = $this->db->get_where(DB.'orders',array("id"=>$order_id))->row();
-				
-			
-				$this->db->set('patient_id', $existing_patients);
-				$this->db->set('device_id', $existing_devices);
-				$this->db->set('address', $address);
-				
-				
-				$this->db->set('order_detail', $order_detail);
-				$this->db->set('order_date', $order_date);
-				$this->db->set('days_prescribed', $days_prescribed);
-				$this->db->set('devices_prescribed', $devices_prescribed);
-				$this->db->set('order_status', $order_status);
-				$this->db->set('rush_indicator', $rush_indicator);
-				$this->db->set('instructions', $instructions);
-				$this->db->set('directions', $directions);
-				$this->db->set('service_code', $carriers_services);
-				$this->db->set('carrier_id', $carriers_id);
-				$this->db->set('updated_at', __date_time);
-				$this->db->where('id', $order_id);
-				if($this->db->update(DB.'orders'))
-				{
-					$recordOrder = $this->db->get_where(DB.'orders',array("id"=>$order_id))->row();
-					$data["order_id"] = $order_id;
-					$data['status'] = true;
-				
-					if($this->_userType==2 && $order_status!="Submitted")
-					{
-						$data['status'] = false;
-						$data['message'] = "Shipment is not created please mark status to Submitted";
-					}
-					elseif($this->_userType==2)
-					{
-						
-						if(isset($recordOrder->order_status) && $recordOrder->order_status=="Submitted")
-						{
-					
-							if(isset($recordOrder->tracking_number) && $recordOrder->tracking_number!="")
-							{
-								$data['status'] = false;
-								$data['message'] = "Shipment is already created please view  <a style='color:#007bff !important;'  href='".base_url("order-summary/").$order_id."' >order summary</a> ";
+				if($return_label==1 && isset($recordOrder->label_id) && isset($recordOrder->tracking_number) && $recordOrder->tracking_number!="")
+                {
 
-							}
-							else
-							{
-								$responseShipment = $this->createShipment($order_id);
-								$data['responseShipment'] = $responseShipment;
-							}
-					
-						}
-						else
-						{
-							$data['status'] = false;
-							$data['message'] = "Shipment is not created please mark status to Submitted";
-						}
-					}
-					
-					
-						
-				}
-				else
-				{
-					$data['status'] = false;
-				}
+                    $this->db->set('return_label', $return_label);
+                    $this->db->where('id', $order_id);
+                    if($this->db->update(DB.'orders'))
+                    {
+                        $responseShipment = $this->createRetrunLabel($order_id);
+                        $data["order_id"] = $order_id;
+                        $data['responseShipment'] = $responseShipment;
+                    }
+                }
+                else
+                {
+                    if(isset($recordOrder->tracking_number) && $recordOrder->tracking_number!="")
+                    {
+                        $data['status'] = false;
+                        $data['message'] = "Shipment is already created please view  <a style='color:#007bff !important;'  href='".base_url("order-summary/").$order_id."' >order summary</a> ";
+
+                    }
+                    else
+                    {
+                        $this->db->set('patient_id', $existing_patients);
+                        $this->db->set('device_id', $existing_devices);
+                        $this->db->set('address', $address);
+
+
+                        $this->db->set('order_detail', $order_detail);
+                        $this->db->set('order_date', $order_date);
+                        $this->db->set('days_prescribed', $days_prescribed);
+                        $this->db->set('devices_prescribed', $devices_prescribed);
+                        $this->db->set('order_status', $order_status);
+                        $this->db->set('rush_indicator', $rush_indicator);
+                        $this->db->set('instructions', $instructions);
+                        $this->db->set('directions', $directions);
+                        $this->db->set('service_code', trim($carriers_services));
+                        $this->db->set('carrier_id', $carriers_id);
+                        $this->db->set('updated_at', __date_time);
+                        $this->db->where('id', $order_id);
+                        if($this->db->update(DB.'orders'))
+                        {
+                            $recordOrder = $this->db->get_where(DB.'orders',array("id"=>$order_id))->row();
+                            $data["order_id"] = $order_id;
+                            $data['status'] = true;
+
+                            if($this->_userType==2 && $order_status!="Submitted")
+                            {
+                                $data['status'] = false;
+                                $data['message'] = "Shipment is not created please mark status to Submitted";
+                            }
+                            elseif($this->_userType==2)
+                            {
+
+                                if(isset($recordOrder->order_status) && $recordOrder->order_status=="Submitted")
+                                {
+
+                                    if(isset($recordOrder->tracking_number) && $recordOrder->tracking_number!="")
+                                    {
+                                        $data['status'] = false;
+                                        $data['message'] = "Shipment is already created please view  <a style='color:#007bff !important;'  href='".base_url("order-summary/").$order_id."' >order summary</a> ";
+
+                                    }
+                                    else
+                                    {
+                                        $responseShipment = $this->createShipment($order_id);
+                                        $data['responseShipment'] = $responseShipment;
+                                    }
+
+                                }
+                                else
+                                {
+                                    $data['status'] = false;
+                                    $data['message'] = "Shipment is not created please mark status to Submitted";
+                                }
+                            }
+
+
+
+                        }
+                        else
+                        {
+                            $data['status'] = false;
+                        }
+                    }
+                }
+
 				
 			}
 			else
@@ -475,6 +497,12 @@ class Order extends CI_Controller {
 
 					$data["order_date"] = date_format($date,"Y/m/d");
 				}
+				if(isset($record->return_created_at) && !empty($record->return_created_at))
+				{
+					$date=date_create($record->return_created_at);
+
+					$data["return_created_at"] = date_format($date,"Y/m/d");
+				}
 				
 				
 				$data["days_prescribed"] = isset($record->days_prescribed)?$record->days_prescribed:"";
@@ -482,6 +510,8 @@ class Order extends CI_Controller {
 				$data["instructions"] = isset($record->instructions)?$record->instructions:"";
 				$data["directions"] = isset($record->directions)?$record->directions:"";
 				$data["created_at"] = isset($record->created_at)?$record->created_at:"";
+				//d($data,1);
+				$data["record"] = isset($record)?$record:array();
 			}
 		}
 		$this->template->load('templates/template_front_home_v2', 'front/order_summary_v2',$data);
@@ -602,7 +632,124 @@ class Order extends CI_Controller {
 		}
 		$this->template->load('templates/template_front_home_v2', 'front/order_tracking_v2',$data);
 	}
-	
+	public function orderTrackingReturn()
+	{
+		$data=array();
+		$data['last_segment'] = "orders";
+		$data["user_type"] = $this->_userType;
+		$data["user_email"] = $this->session->userdata('user_email');
+		$id=$this->uri->segment(2);
+
+		if(isset($id) && $id>0)
+		{
+			$record = $this->db->get_where(DB.'orders',array('status'=>1,"id"=>$id))->row();
+
+			if(isset($record) && !empty($record))
+			{
+				$data["order_id"] = isset($record->id)?$record->id:0;
+				$data["patient_id"] = isset($record->patient_id)?$record->patient_id:0;
+				$data["device_id"] = isset($record->device_id)?$record->device_id:0;
+				$data["address"] = isset($record->address)?$record->address:"";
+				$data["order_status"] = isset($record->order_status)?$record->order_status:"";
+				$data["order_detail"] = isset($record->order_detail)?$record->order_detail:"";
+				$data["order_status_able"] = isset($record->return_order_status)?$record->return_order_status:"";
+				$data["shipment_id"] = isset($record->return_shipment_id)?$record->return_shipment_id:"";
+				$data["carrier_id"] = isset($record->return_carrier_id)?$record->return_carrier_id:"";
+				$data["shipment_status"] = isset($record->return_shipment_status)?$record->return_shipment_status:"";
+				$data["label_id"] = isset($record->return_label_id)?$record->return_label_id:"";
+				$data["tracking_number"] = $tracking_number = isset($record->return_tracking_number)?$record->return_tracking_number:"";
+				$data["label_download"] = isset($record->return_label_download)?$record->return_label_download:"";
+				$data["label_status"] = isset($record->return_label_status)?$record->return_label_status:"";
+				$data["shipping_currency"] = isset($record->shipping_currency)?$record->shipping_currency:"";
+				$data["shipping_amount"] = isset($record->return_shipping_amount)?$record->return_shipping_amount:"";
+				$data["tracking_status"] = isset($record->return_tracking_status)?$record->return_tracking_status:"";
+				$data["service_code"] = isset($record->service_code)?$record->service_code:"";
+				$data["tracking_status_description"] = isset($record->tracking_status_description)?$record->tracking_status_description:"";
+				$data["carrier_status_description"] = isset($record->carrier_status_description)?$record->carrier_status_description:"";
+				$data["tracking_status_code"] = isset($record->tracking_status_code)?$record->tracking_status_code:"";
+				$data["estimated_delivery_date"] = isset($record->estimated_delivery_date)?$record->estimated_delivery_date:"";
+				$data["actual_delivery_date"] = isset($record->actual_delivery_date)?$record->actual_delivery_date:"";
+				$data["return_shipment_response"] = isset($record->return_shipment_response)?json_decode($record->return_shipment_response):"";
+
+				if(isset($record->order_date) && empty($record->order_date))
+				{
+					$date=date_create($record->created_at);
+
+
+					$data["order_date"] = date_format($date,"Y/m/d");
+				}
+				else
+				{
+					$data["order_date"] = isset($record->order_date)?$record->order_date:"";
+				}
+
+
+				$data["days_prescribed"] = isset($record->days_prescribed)?$record->days_prescribed:"";
+				$data["rush_indicator"] = isset($record->rush_indicator)?$record->rush_indicator:0;
+				$data["instructions"] = isset($record->instructions)?$record->instructions:"";
+				$data["directions"] = isset($record->directions)?$record->directions:"";
+				$data["created_at"] = isset($record->created_at)?$record->created_at:"";
+				if(false && isset($tracking_number) && !empty($tracking_number))
+				{
+					$responseTrackShippingApi = callAPI("GET","http://13.48.249.120/api/shipengine/trackShipping/".$tracking_number."",array(),"trackShipping");
+				}
+				if(isset($responseTrackShippingApi) && !empty($responseTrackShippingApi))
+				{
+					$responseTrackShippingApiDecoded = json_decode($responseTrackShippingApi);
+					if(isset($responseTrackShippingApiDecoded->tracking_number) && !empty($responseTrackShippingApiDecoded->tracking_number))
+					{
+						$this->db->set('tracking_status_code', $responseTrackShippingApiDecoded->status_code);
+						$this->db->set('tracking_status_description', $responseTrackShippingApiDecoded->status_description);
+						$this->db->set('carrier_status_description', $responseTrackShippingApiDecoded->carrier_status_description);
+						$this->db->set('estimated_delivery_date', $responseTrackShippingApiDecoded->estimated_delivery_date);
+						$this->db->set('actual_delivery_date', $responseTrackShippingApiDecoded->actual_delivery_date);
+
+						$this->db->set('updated_at', __date_time);
+						$this->db->where('id', $id);
+						if($this->db->update(DB.'orders'))
+						{
+							$data["tracking_status_code"] = isset($responseTrackShippingApiDecoded->status_code)?$responseTrackShippingApiDecoded->status_code:"N/A";
+							$data["tracking_status_description"] = isset($responseTrackShippingApiDecoded->status_description)?$responseTrackShippingApiDecoded->status_description:"N/A";
+							$data["carrier_status_description"] = isset($responseTrackShippingApiDecoded->carrier_status_description)?$responseTrackShippingApiDecoded->carrier_status_description:"N/A";
+							$data["estimated_delivery_date"] = isset($responseTrackShippingApiDecoded->estimated_delivery_date)?$responseTrackShippingApiDecoded->estimated_delivery_date:"N/A";
+							$data["actual_delivery_date"] = isset($responseTrackShippingApiDecoded->actual_delivery_date)?$responseTrackShippingApiDecoded->actual_delivery_date:"N/A";
+
+							$data["available_status"]=true;
+						}
+						$data["available_status"]=true;
+					}
+					else
+					{
+						if(isset($data["tracking_status_code"]) && $data["tracking_status_code"]!="")
+						{
+							$data["available_status"]=true;
+						}
+						else
+						{
+							$data["available_status"]=false;
+						}
+
+					}
+				}
+				else
+				{
+
+					if(isset($data["tracking_status_code"]) && $data["tracking_status_code"]!="")
+					{
+						$data["available_status"]=true;
+					}
+					else
+					{
+						$data["available_status"]=false;
+					}
+				}
+
+
+			}
+		}
+		$this->template->load('templates/template_front_home_v2', 'front/order_tracking_v2',$data);
+	}
+
 	
 	
 	function createShipment($order_id=0)
@@ -625,7 +772,7 @@ class Order extends CI_Controller {
 			{
 				$query = $this->db->query('SELECT * FROM mz_patients_detail WHERE patient_id='.$ordersDetail->patient_id);
 				$patientDetail = $query->result();
-				
+
 			}
 			else
 			{
@@ -690,17 +837,17 @@ class Order extends CI_Controller {
 		
 		if(!empty($orderAddress))
 		{
-			
 			$ship_to=array("name"=>$name,"phone"=>$phone,
 			"address_line1"=>isset($orderAddress["addressLine1"])?$orderAddress["addressLine1"]:"",
 			"city_locality"=>isset($orderAddress["city"])?$orderAddress["city"]:"",
 			"state_province"=>isset($orderAddress["state"])?trim($orderAddress["state"]):"",
 			"postal_code"=>isset($orderAddress["zipcode"])?$orderAddress["zipcode"]:"",
-			"country_code"=>"US"
+			"country_code"=>"US",
+            "address_residential_indicator"=>"yes"
 			);
 			$ship_from=array(
-			"company_name"=>"Vectortechsol Medzah",
-			"name"=>"Vectortechsol",
+			"company_name"=>"SecureSign",
+			"name"=>"SecureSign",
 			"phone"=>"111-111-1111",
 			"address_line1"=>"4009 Marathon Blvd",
 			"address_line2"=>"Suite 300",
@@ -721,34 +868,33 @@ class Order extends CI_Controller {
 			$ordersDetail->device_unit='pound';
 			$packages=array(
 				"weight"=>array(
-					"value"=>$ordersDetail->device_numeric_weight,
+					"value"=>filter_var($ordersDetail->device_numeric_weight, FILTER_VALIDATE_FLOAT),
 					"unit"=>$ordersDetail->device_unit
 				)
 			);
 		}
 		$dimensions["dimensions"]=array(
 				"unit"=>"inch",
-				"length"=>$ordersDetail->device_length,
-				"width"=>$ordersDetail->device_width,
-				"height"=>$ordersDetail->device_height
+				"length"=>filter_var($ordersDetail->device_length, FILTER_VALIDATE_FLOAT),
+				"width"=>filter_var($ordersDetail->device_width, FILTER_VALIDATE_FLOAT),
+				"height"=>filter_var($ordersDetail->device_height, FILTER_VALIDATE_FLOAT)
 			);
 		
 		$order_data=array('validate_address'=>'no_validation',
 						'service_code'=>$service_code,
+						'external_shipment_id'=>$ordersDetail->id.(time() + rand(0, 1000)),
 						'ship_to'=>$ship_to,
 						'ship_from'=>$ship_from,
 						'confirmation'=>'none',
-						'advanced_options'=>array(),
 						'insurance_provider'=>'none',
 						'tags'=>array(),
-						'packages'=>array($packages),
-						$dimensions
+						'packages'=>array($packages)
 						);
-		
-		$shipments_data = (array('shipments'=>array($order_data) ));
-		
-		$responseShipmentApi = callAPI("POST","http://13.48.249.120/api/shipengine/createShipping",$shipments_data,"createShipping");
-	
+
+		$shipments_data = (array('shipments'=>array($order_data)));
+		//d($shipments_data,1);
+		$responseShipmentApi = callAPI("POST","https://api.shipengine.com/v1/shipments",$shipments_data,"createShipping");
+		//d($responseShipmentApi,1);
 		if(isset($responseShipmentApi) && !empty($responseShipmentApi))
 		{
 			$responseShipmentApiResponse = json_decode($responseShipmentApi);
@@ -757,7 +903,7 @@ class Order extends CI_Controller {
 				$errors = $responseShipmentApiResponse->errors;
 				$responseReturn["status"]="failure";
 				$responseReturn["message"]=isset($errors[0]->message)?$errors[0]->message:"Shipment id is not available  please contact with admin";
-				
+
 			}
 			elseif(isset($responseShipmentApiResponse->shipments) && $responseShipmentApiResponse->shipments!="")
 			{
@@ -772,6 +918,7 @@ class Order extends CI_Controller {
 						$this->db->set('service_code', $shipments->service_code);
 						$this->db->set('ship_date', $shipments->ship_date);
 						$this->db->set('shipment_status', $shipments->shipment_status);
+						$this->db->set('external_shipment_id', !empty($shipments->external_shipment_id)?$shipments->external_shipment_id:"");
 						$this->db->set('order_status', "Submitted");
 						$this->db->set('shipment_response', $responseShipmentApi);
 						$this->db->set('updated_at', __date_time);
@@ -782,10 +929,10 @@ class Order extends CI_Controller {
 							$responseReturn["message"]="Order shipment is created";
 						}
 					}
-					$responseLabelApi = callAPI("GET","http://13.48.249.120/api/shipengine/createShippingLabel/".$shipments->shipment_id."",array(),"createShippingLabel");
+					$responseLabelApi = callAPI("POST","https://api.shipengine.com/v1/labels/shipment/".$shipments->shipment_id."",array(),"createShippingLabel");
+					//d($responseLabelApi,1);
 					if(isset($responseLabelApi) && !empty($responseLabelApi))
 					{
-						
 						$responseLabelDecoded = json_decode($responseLabelApi);
 						if(isset($responseLabelDecoded->errors) && !empty($responseLabelDecoded->errors))
 						{
@@ -801,12 +948,13 @@ class Order extends CI_Controller {
 							$tracking_number = $responseLabelDecoded->tracking_number;
 							$currency = isset($shipment_cost->currency)?$shipment_cost->currency:'';
 							$amount = isset($shipment_cost->amount)?$shipment_cost->amount:"";
-							
+
 							$label_pdf = isset($label_download->pdf)?$label_download->pdf:'';
 							$this->db->set('label_id', $responseLabelDecoded->label_id);
 							$this->db->set('label_status', $responseLabelDecoded->status);
 							$this->db->set('shipping_currency', $currency);
 							$this->db->set('shipping_amount', $amount);
+                            $this->db->set('external_shipment_id', !empty($shipments->external_shipment_id)?$shipments->external_shipment_id:"");
 							$this->db->set('tracking_number', $responseLabelDecoded->tracking_number);
 							$this->db->set('tracking_status', $responseLabelDecoded->tracking_status);
 							$this->db->set('label_download', $label_pdf);
@@ -823,11 +971,11 @@ class Order extends CI_Controller {
 								$responseReturn["message"]="Label is not created";
 							}
 						}
-						
+
 
 					}
-					
-					
+
+
 				}
 				else
 				{
@@ -847,7 +995,224 @@ class Order extends CI_Controller {
 			$responseReturn["message"]="Shipment is not created please contact with admin";
 		}
 		return $responseReturn;
-					
+
+	}
+	function createRetrunLabel($order_id=0)
+	{
+		$responseReturn=array();
+		$responseReturn["status"]="success";
+		$responseReturn["message"]="success";
+		$query = $this->db->query('SELECT o.id,o.address ,o.carrier_id ,o.service_code ,o.tracking_number,o.shipment_id,0.label_id,
+		p.`first_name`,p.`middle_name`,p.`last_name`,
+		p.`gfirst_name`,p.`gmiddle_name`,p.`glast_name`,p.pcheck,p.id as patient_id,
+		d.device_unit,d.device_numeric_weight,d.device_length,d.device_width,d.device_height
+		,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.id='.$order_id.' LIMIT 1');
+		$ordersDetail = $query->result();
+		$service_code="";
+		$tracking_number="";
+		$shipment_id="";
+		$carrier_id="";
+        $label_id="";
+		if(isset($ordersDetail[0]) && !empty($ordersDetail[0]))
+		{
+			$ordersDetail = $ordersDetail[0];
+			$service_code = isset($ordersDetail->service_code)?$ordersDetail->service_code:"";
+            $tracking_number = isset($ordersDetail->tracking_number)?$ordersDetail->tracking_number:"";
+            $shipment_id = isset($ordersDetail->shipment_id)?$ordersDetail->shipment_id:"";
+            $carrier_id = isset($ordersDetail->carrier_id)?$ordersDetail->carrier_id:"";
+            $label_id = isset($ordersDetail->label_id)?$ordersDetail->label_id:"";
+			if(isset($ordersDetail->patient_id) && $ordersDetail->patient_id>0)
+			{
+				$query = $this->db->query('SELECT * FROM mz_patients_detail WHERE patient_id='.$ordersDetail->patient_id);
+				$patientDetail = $query->result();
+
+			}
+			else
+			{
+				$responseReturn["status"]="failure";
+				$responseReturn["message"]="Patient information is missing";
+			}
+
+		}
+		else
+		{
+			$responseReturn["status"]="failure";
+			$responseReturn["message"]="Patient information is missing";
+		}
+		$orderAddress = array();
+
+		if(!empty($ordersDetail->address))
+		{
+			$orderAddress = $this->getAddressOrder($ordersDetail->address);
+
+		}
+		else
+		{
+			$responseReturn["status"]="failure";
+			$responseReturn["message"]="Order address information is missing";
+		}
+		$name="";
+		$phone="";
+		if(isset($ordersDetail->pcheck) && $ordersDetail->pcheck>0)
+		{
+			$name = $ordersDetail->gfirst_name." ".$ordersDetail->gmiddle_name." ".$ordersDetail->glast_name;
+			if(isset($patientDetail) && !empty($patientDetail))
+			{
+				foreach($patientDetail as $key=>$val)
+				{
+					if($val->gcontact_phone!="")
+					{
+						$phone = $val->gcontact_phone;
+						break;
+					}
+				}
+			}
+
+			//$phone = $ordersDetail->
+		}
+		else
+		{
+			$name = $ordersDetail->first_name." ".$ordersDetail->middle_name." ".$ordersDetail->last_name;
+			if(isset($patientDetail) && !empty($patientDetail))
+			{
+				foreach($patientDetail as $key=>$val)
+				{
+					if($val->patinet_contact_phone!="")
+					{
+						$phone = $val->patinet_contact_phone;
+						break;
+					}
+				}
+			}
+		}
+		$ship_to=array();
+		$ship_from=array();
+
+		if(!empty($orderAddress))
+		{
+            $ship_from=array("name"=>$name,"phone"=>$phone,
+			"address_line1"=>isset($orderAddress["addressLine1"])?$orderAddress["addressLine1"]:"",
+			"city_locality"=>isset($orderAddress["city"])?$orderAddress["city"]:"",
+			"state_province"=>isset($orderAddress["state"])?trim($orderAddress["state"]):"",
+			"postal_code"=>isset($orderAddress["zipcode"])?$orderAddress["zipcode"]:"",
+			"country_code"=>"US",
+            "address_residential_indicator"=>"yes",
+			);
+            $ship_to=array(
+			"company_name"=>"SecureSign",
+			"name"=>"SecureSign",
+			"phone"=>"111-111-1111",
+			"address_line1"=>"4009 Marathon Blvd",
+			"address_line2"=>"Suite 300",
+			"city_locality"=>"Austin",
+			"state_province"=>"TX",
+			"postal_code"=>"78756",
+			"address_residential_indicator"=>"no",
+			"country_code"=>"US"
+			);
+		}
+		else
+		{
+			$responseReturn["status"]="failure";
+			$responseReturn["message"]="Order address information is missing";
+		}
+		$packages=array();
+		if(isset($ordersDetail->device_unit) && isset($ordersDetail->device_numeric_weight))
+		{
+			$ordersDetail->device_unit='pound';
+			$packages=array(
+				"weight"=>array(
+					"value"=>filter_var($ordersDetail->device_numeric_weight, FILTER_VALIDATE_FLOAT),
+					"unit"=>$ordersDetail->device_unit
+				)
+			);
+		}
+		$dimensions["dimensions"]=array(
+				"unit"=>"inch",
+				"length"=>filter_var($ordersDetail->device_length, FILTER_VALIDATE_FLOAT),
+				"width"=>filter_var($ordersDetail->device_width, FILTER_VALIDATE_FLOAT),
+				"height"=>filter_var($ordersDetail->device_height, FILTER_VALIDATE_FLOAT)
+			);
+
+		$order_data=array(
+						'service_code'=>$service_code,
+						'ship_to'=>$ship_to,
+						'ship_from'=>$ship_from,
+						'packages'=>array($packages)
+						);
+
+		$shipments_data = (array(
+		    'is_return_label'=>true,
+		    'outbound_label_id'=>$label_id,
+            "charge_event"=> "carrier_default",
+		    'rma_number'=>$shipment_id.'-'.$ordersDetail->id
+        ,'shipment'=>$order_data ));
+		//d($shipments_data,1);
+		$responseShipmentApi = callAPI("POST","https://api.shipengine.com/v1/labels",$shipments_data,"createShipping");
+		//d($responseShipmentApi,1);
+		if(isset($responseShipmentApi) && !empty($responseShipmentApi))
+		{
+			$responseShipmentApiResponse = json_decode($responseShipmentApi);
+			if(isset($responseShipmentApiResponse->errors) && !empty($responseShipmentApiResponse->errors))
+			{
+				$errors = $responseShipmentApiResponse->errors;
+				$responseReturn["status"]="failure";
+				$responseReturn["message"]=isset($errors[0]->message)?$errors[0]->message:"Shipment retrun failure  please contact with admin";
+
+			}
+			elseif(!empty($responseShipmentApiResponse->label_id))
+			{
+				$shipments = $responseShipmentApiResponse;
+				if(isset($shipments))
+				{
+					if($shipments->label_id!="")
+					{
+					    //d($shipments,1);
+					    $shipment_cost = !empty($shipments->shipment_cost)?$shipments->shipment_cost:array();
+					    $label_download = !empty($shipments->label_download)?$shipments->label_download:array();
+						$this->db->set('return_label_id', $shipments->label_id);
+						$this->db->set('return_label_status', $shipments->status);
+						$this->db->set('return_shipment_id', $shipments->shipment_id);
+						$this->db->set('return_external_order_id', $shipments->external_order_id);
+						$this->db->set('return_tracking_number', $shipments->tracking_number);
+						$this->db->set('return_ship_date', !empty($shipments->ship_date)?$shipments->ship_date:"");
+						$this->db->set('return_created_at', !empty($shipments->created_at)?$shipments->created_at:"");
+						$this->db->set('rma_number', !empty($shipments->rma_number)?$shipments->rma_number:"");
+						$this->db->set('return_carrier_id', !empty($shipments->carrier_id)?$shipments->carrier_id:"");
+						$this->db->set('return_service_code', !empty($shipments->service_code)?$shipments->service_code:"");
+						$this->db->set('return_carrier_code', !empty($shipments->carrier_code)?$shipments->carrier_code:"");
+						$this->db->set('return_tracking_status', !empty($shipments->tracking_status)?$shipments->tracking_status:"");
+						$this->db->set('return_label_download', !empty($label_download->pdf)?$label_download->pdf:"");
+						$this->db->set('return_shipping_amount', !empty($shipment_cost->amount)?$shipment_cost->amount:"0");
+						$this->db->set('return_shipment_response', ($responseShipmentApi));
+						$this->db->set('updated_at', __date_time);
+						$this->db->where('id', $order_id);
+						if($this->db->update(DB.'orders'))
+						{
+							$responseReturn["status"]="success";
+							$responseReturn["message"]="Return Order shipment is created";
+						}
+					}
+				}
+				else
+				{
+					$responseReturn["status"]="failure";
+					$responseReturn["message"]="Return Shipment  is not available  please contact with admin";
+				}
+			}
+			else
+			{
+				$responseReturn["status"]="failure";
+				$responseReturn["message"]="Return Shipment have syntex error  please contact with admin";
+			}
+		}
+		else
+		{
+			$responseReturn["status"]="failure";
+			$responseReturn["message"]="Return Shipment is not created please contact with admin";
+		}
+		return $responseReturn;
+
 	}
 	function getAddressOrder($orderAddress=array())
 	{
@@ -935,7 +1300,7 @@ class Order extends CI_Controller {
 		if(isset($recordOrder) && !empty($recordOrder) && isset($recordOrder->patient_id) && !empty($recordOrder->patient_id))
 		{
 			//$recordOrder->patient_id;
-			$recordPatient = $this->db->get_where(DB.'patients',array("id"=>$recordOrder->patient_id))->row();
+			$recordPatient = $this->db->get_where('recipients',array("id"=>$recordOrder->patient_id))->row();
 			if(isset($recordPatient) && !empty($recordPatient))
 			{
 				$query = $this->db->order_by('id', 'DESC')->get_where(DB.'patients_detail',array('patient_id'=>$recordOrder->patient_id));
@@ -1021,10 +1386,10 @@ class Order extends CI_Controller {
 		$ship_to=array(
 		"name"=>isset($patient_name)?$patient_name:"",
 		"address_line1"=>isset($address_linea)?$address_linea:"",
-		"city_locality"=>isset($city)?$city:"",
+		"to_city_locality"=>isset($city)?$city:"",
 		"state_province"=>isset($state)?$state:"",
-		"postal_code"=>isset($zip_code)?$zip_code:"",
-		"country_code"=>"US"
+		"from_postal_code"=>isset($zip_code)?$zip_code:"",
+		"from_country_code"=>"US"
 		);
 		$ship_from=array(
 		"company_name"=>"Example Corp.",  
@@ -1032,11 +1397,12 @@ class Order extends CI_Controller {
 			"phone"=>"111-111-1111",  
 			"address_line1"=>"4009 Marathon Blvd",  
 			"address_line2"=>"Suite 300",  
-			"city_locality"=>"Austin",  
+			"to_city_locality"=>"Austin",
 			"state_province"=>"TX",  
-			"postal_code"=>"78756",  
-			"country_code"=>"US"
+			"to_postal_code"=>"78756",
+			"to_country_code"=>"US"
 		);
+        $address = array_merge($ship_to, $ship_from);
 		$packages=array();
 		
 		if(isset($devices_detail) && $devices_detail->device_unit=="lb")
@@ -1056,36 +1422,41 @@ class Order extends CI_Controller {
 		"width"=>(isset($devices_detail->device_width)?$devices_detail->device_width:1),
 		"height"=>(isset($devices_detail->device_height)?$devices_detail->device_height:1));
 				$packages=array("weight"=>$weight,"dimensions"=>$dimensions);
-
-		$shipment_data["validate_address"]="no_validation";
+        $addressAndPackage = array_merge($address, $packages);
+		$shipment_data["confirmation"]="none";
+		$shipment_data["address_residential_indicator"]="no";
+		$finalShipmentData = array_merge($addressAndPackage,$shipment_data);
+		$finalShipmentDataWithCarriers = array_merge($carrier_idsArray,$finalShipmentData);
 		$shipment_data["ship_to"]=$ship_to;
 		$shipment_data["ship_from"]=$ship_from;
 		$shipment_data["packages"]=array($packages);
 		
-		$estimation_data["rate_options"] = array("carrier_ids"=>array($carriers_id));
-		$estimation_data["shipment"] = $shipment_data;
+		$estimation_data = array("carrier_ids"=>array($carriers_id));
+		$estimation_data = $shipment_data;
 		
 		$rates=array();
 		$errorsRate=array();
 		$packages=array();
 		$total_weight_value="";
 		$total_weight_unit="";
-		$responseCostEstimationApi = callAPI("POST","http://13.48.249.120/api/shipengine/costEstimation",$estimation_data,"costEstimation");
-		//d($responseCostEstimationApi,1);
+		//d($finalShipmentDataWithCarriers,1);
+		$responseCostEstimationApi = callAPI("POST","https://api.shipengine.com/v1/rates/estimate",$finalShipmentDataWithCarriers,"costEstimation");
+
+
 		if(isset($responseCostEstimationApi) && !empty($responseCostEstimationApi))
 		{
 			$responseCostEstimation = json_decode($responseCostEstimationApi);
-			if(isset($responseCostEstimation->rate_response) && !empty($responseCostEstimation->rate_response))
+			if(isset($responseCostEstimation) && !empty($responseCostEstimation))
 			{
-				$rate_response = $responseCostEstimation->rate_response;
+				$rate_response = $responseCostEstimation;
 				if(isset($rate_response->errors) && !empty($rate_response->errors))
 				{
 					$errorsRate = $rate_response->errors;
 					
 				}
-				if(isset($rate_response->rates) && !empty($rate_response->rates))
+				if(isset($rate_response) && !empty($rate_response))
 				{
-					$rates = $rate_response->rates;
+					$rates = $rate_response;
 					
 				}
 				

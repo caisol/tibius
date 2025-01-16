@@ -32,11 +32,11 @@
 					
 					<div class="row01">
 						<div class="col-sm-4">
-							<label>Patient Name</label>
+							<label>Recipients Name</label>
 							<p id="patient_name" >N/A</p>
 						</div>
 						<div id="device_name_div" class="col-sm-4">
-							<label>Device Name</label>
+							<label>Envelope Name</label>
 							<p id="device_name_view" >N/A</p>
 						</div>
 					</div>
@@ -70,8 +70,21 @@
 						</div>
 						
 					</div>
-					
-					<div class="row01">
+                    <?php if(!empty($record->return_label_id)){?>
+                    <div class="row02">
+                            <div class="col-sm-10">
+                                <label>Return Tracking</label>
+                                <p>	Return Tracking <span><?php if(isset($record->return_tracking_number) && $record->return_tracking_number!=""){?><a style="color:#007bff !important;" href="<?php echo base_url("shipping-detail-return/".$order_id);?>"><?php echo isset($record->return_tracking_number)?'#'.$record->return_tracking_number:"N/A"; ?></a><?php }else{ echo "N/A";} ?></span><br/>
+                                    Return Order Status: <span id="order_status_span" ><?php echo isset($record->return_label_status)?$record->return_label_status:"New"; ?></span><br/>
+                                    Return Carrier Name: <span id="carrier_name_span" > <?php echo (isset($record->return_service_code) && $record->return_service_code!="")?strtoupper($record->return_service_code):"N/A" ?></span><br/>
+                                    Return Order Date: <span id="order_date"> <?php echo isset($return_created_at)?$return_created_at:"N/A"?></span><br/>
+                                </p>
+                            </div>
+
+                    </div>
+                    <?php } ?>
+
+                        <div class="row01">
 						<div class="col-sm-10">
 							<label>Device Information</label>
 							<p>	Device Name: <span id="device_name_span"  >N/A </span><br/>

@@ -183,7 +183,7 @@
 			<a href="#" class="nav-link <?php echo (isset($last_segment) && $last_segment=="patients")?"active":""; ?> ">
               <i class="nav-icon fas fa-wheelchair"></i>
               <p>
-                Patients
+                  Recipients
                 <i class="fas fa-angle-right right"></i>
                 
               </p>
@@ -193,7 +193,7 @@
               <li class="nav-item">
                 <a href="<?php echo base_url("manage-patients");?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>All Patients</p>
+                  <p>All Recipients</p>
                 </a>
               </li>
 			   <li class="nav-item">
@@ -210,7 +210,7 @@
             <a href="#" class="nav-link <?php echo (isset($last_segment) && $last_segment=="devices")?"active":""; ?> ">
               <i class="nav-icon fas fa-copy"></i>
               <p>
-                Devices
+                  Envelope
                 <i class="fas fa-angle-right right"></i>
                 
               </p>
@@ -226,19 +226,19 @@
               <li class="nav-item">
                 <a href="<?php echo base_url("manage-devices");?>" class="nav-link ">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>All Devices</p>
+                  <p>All Envelope</p>
                 </a>
               </li>
 			  <li class="nav-item">
                 <a href="<?php echo base_url("manage-device-orders");?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Device Orders</p>
+                  <p>Envelope Orders</p>
                 </a>
               </li>
 			  <li class="nav-item">
                 <a href="<?php echo base_url("import-devices");?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Import Devices</p>
+                  <p>Import Envelope</p>
                 </a>
               </li>
 			  

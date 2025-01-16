@@ -2,9 +2,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ini_set('max_execution_time', '300'); //300 seconds = 5 minutes
 ignore_user_abort(true);
-set_time_limit(0);
-error_reporting(E_ERROR | E_PARSE);
-
+set_time_limit(1);
+//error_reporting(E_ERROR | E_PARSE);
+//include_once(APPPATH.'controllers/Pdf.php');
+//include_once(APPPATH.'controllers/ElementRaw.php');
 class Device extends CI_Controller {
 
 	private $_CID=0;
@@ -809,5 +810,30 @@ PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
 				return "";
 			}
 		}
+
+    public function secureSign()
+    {
+        //echo "here";
+        //loads a sample PDF file
+        $pathfc =  FCPATH.'application/controllers/';
+        $pdf = Farit_Pdf::load($pathfc.'sample_contract.pdf');
+        //d($pdf);
+        //attaches a digital certificate
+        //read the sample certificate file into a string
+        $certificate = file_get_contents($pathfc.'sample_certificate.p12');
+        //password for the certificate
+        $certificatePassword = 'test123';
+
+        if (empty($certificate)) {
+            echo "sss";
+            throw new Zend_Pdf_Exception('Cannot open the certificate file');
+        }
+
+        $pdf->attachDigitalCertificate($certificate, $certificatePassword);
+
+        //here the digital certificate is inserted inside of the PDF document
+        $renderedPdf = $pdf->render();
+        file_put_contents($pathfc.'sample_contract_signed.pdf', $renderedPdf);
+    }
 	
 }

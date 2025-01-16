@@ -59,7 +59,7 @@ class Order extends CI_Controller {
 		
 		//$data["carriers"]  = $this->listCarriers();
 		
-		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'patients',array('status'=>1));
+		$query = $this->db->order_by('id', 'DESC')->get_where('recipients',array('status'=>1));
 		$data['patients'] = $patients =  $query->result();
 		
 		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'devices',array('status'=>1));

@@ -11,7 +11,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-2">
-            <h1 class="m-0">Device List</h1>
+            <h1 class="m-0">Envelope List</h1>
           </div><!-- /.col -->
           <div class="col-md-6 search-bar">
             <form class="form-inline">
@@ -34,7 +34,7 @@
 		  </div>
 		  
 		  <div class="col-md-2 order-add">
-			<button type="button" class="btn btn-primary" onclick="clearForm();" data-toggle="modal" data-target="#modal-primary" >+ Add Device</button>
+			<button type="button" class="btn btn-primary" onclick="clearForm();" data-toggle="modal" data-target="#modal-primary" >+ Add Envelope</button>
 		  </div>
 		  <!-- Alerts-->
 			<div style="display:none;" id="success_div" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -59,7 +59,7 @@
         <div class="modal-dialog">
           <div class="modal-content bg-white">
             <div class="modal-header">
-              <h4 class="modal-title">Add Devices</h4>
+              <h4 class="modal-title">Add Envelopes</h4>
 			  
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -73,14 +73,14 @@
                       <div class="form-group">
 						<input type="hidden" id="device_id" value="<?php echo isset($devices->id)?$devices->id:0; ?>" />
 
-                        <label for="Device-name">Device ID</label>
+                        <label for="Device-name">Envelope ID</label>
 						<input type="text" class="form-control" placeholder="" style="color:white;" disabled value="<?php echo isset($devices->id)?$devices->id:""; ?>" id="device_hidden_id" name="device_hidden_id">
                       </div>
                 </div>
 				<div class="col-sm-3">
                       <!-- text input -->
                       <div class="form-group">
-                        <label for="attachments">Device Category</label>
+                        <label for="attachments">Envelope Category</label>
 						<select  name="device_category" id="device_category" >
 							<option <?php echo (isset($devices->device_category) && $devices->device_category=="")?"selected":""; ?> value="" >Select Device Category</option>
 							<option <?php echo (isset($devices->device_category) && $devices->device_category=="Basic surgical")?"selected":""; ?>  value="Basic surgical" >Basic surgical operation instuments </option>
@@ -95,7 +95,7 @@
 				<div class="col-sm-3">
                       <!-- text input -->
                       <div class="form-group">
-                        <label for="Device-name">Device Name</label>
+                        <label for="Device-name">Envelope Name</label>
 						<input type="text" class="form-control" placeholder="" value="<?php echo isset($devices->device_name)?$devices->device_name:""; ?>" id="device_name" name="device_name">
                       </div>
                 </div>
@@ -103,7 +103,7 @@
 				<div class="col-sm-3">
                       <!-- text input -->
                       <div class="form-group">
-                        <label for="Device-barcode">Device  Barcode</label>
+                        <label for="Device-barcode">Envelope  Barcode</label>
 						<input type="text" class="form-control" placeholder="" value="<?php echo isset($devices->device_barcode)?$devices->device_barcode:""; ?>"  name="device_barcode" id="device_barcode" >
                       </div>
                 </div>
@@ -114,7 +114,7 @@
 					<div class="col-sm-4">
                       <!-- text input -->
                       <div class="form-group">
-                        <label for="attachments">Device Attachments</label>
+                        <label for="attachments">Envelope Attachments</label>
 						<select class="selectpicker" multiple data-live-search="true" name="attachments[]"  id="attachments" >
 							<option value="Oximeter" >Oximeter</option>
 							<option value="Blood Pressure cuff" >Blood Pressure cuff</option>
@@ -151,7 +151,7 @@
 						<div class="col-sm-3">
 						  <!-- text input -->
 						  <div class="form-group">
-							<label for="device_count">Device count</label>
+							<label for="device_count">Envelope count</label>
 							<input type="text" placeholder="" class="form-control" value="<?php echo isset($devices->device_count)?$devices->device_count:""; ?>" id="device_count" name="device_count">
 						  </div>
 						</div>
@@ -159,7 +159,7 @@
 						<div class="col-sm-3">
 						  <!-- text input -->
 						  <div class="form-group">
-							<label for="device_count">Device Description</label>
+							<label for="device_count">Envelope Description</label>
 							<textarea placeholder="" class="form-control" id="device_description" rows="3"><?php echo isset($devices->device_description)?$devices->device_description:""; ?></textarea>
 						  </div>
 						</div>
@@ -254,7 +254,7 @@
 						<div class="col-sm-3">
 						  <!-- text input -->
 						  <div class="form-group">
-							<label>Device image</label>
+							<label>Envelope image</label>
 								<div class="custom-file">
 								  <input type="file" class="custom-file-input"  name="device_image[]" multiple id="device_image">
 								  <label class="custom-file-label" for="customFile">Choose file</label>
@@ -323,9 +323,9 @@
                   <tr>
                     
 					
-					<th>Device ID</th>
-					<th>Device Name</th>
-					<th>Device BarCode</th>
+					<th>Envelope ID</th>
+					<th>Envelope Name</th>
+					<th>Envelope BarCode</th>
 					<th>Total</th>
 					<th>Options</th>
 					

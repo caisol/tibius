@@ -33,7 +33,7 @@
 		  </div>
 		  
 		  <div class="col-md-2 order-add">
-			<?php if(!isset($user_type) || $user_type!=2) { ?><button type="button" class="btn btn-primary" onclick="clearForm();" data-toggle="modal" data-target="#modal-primary">+ Add Order</button><?php } ?>
+			<?php if(true || !isset($user_type) || $user_type!=2) { ?><button type="button" class="btn btn-primary" onclick="clearForm();" data-toggle="modal" data-target="#modal-primary">+ Add Order</button><?php } ?>
 		  </div>
 		  <div style="display:none;" id="success_div" class="alert alert-success alert-dismissible fade show" role="alert">
 				<strong>Successfully Done!</strong> Please add payment now
@@ -62,7 +62,7 @@
 				<h4 class="modal-title">Create Label</h4>
 					<div class="row">
 					  <form name="form">
-					  <div class="tab">
+					  <div id="formDataOrder" class="tab">
 							<div class="row">
 							<div style="margin:0px 0px 20px 0px;" class="col-sm-10">
 							<div class="form-pointed">
@@ -217,8 +217,8 @@
 							<div class="row">
 							<div class="col-sm-8 form-group radio-btn">
 								<label></label>
-								<input class="form-check-input" type="radio" name="radio1" checked="">
-								<label class="form-check-label">Return Address</label>
+								<input class="form-check-input" type="checkbox" name="return_label" id="return_label" checked="">
+								<label class="form-check-label">Return Label</label>
 							 </div>
 							</div>
 						</div>
@@ -345,7 +345,7 @@
 							</p>
 						</div>
 						<div class="tracking-slip">
-							<img src="<?php echo FRONT_IMG_V2; ?>shipment.jpg"/>
+							<img id="tracking-slip-id" src="<?php echo FRONT_IMG_V2; ?>shipment.jpg"/>
 						</div>
 					</div>
 				 </div>
@@ -400,8 +400,8 @@
 					  
 					   <div class="existing-patient">
 						 <div class="exist">
-						<label>Patient Name</label>
-										<select class="selectpicker"  data-live-search="true"  <?php echo (isset($user_type) && $user_type==2)?"disabled":""; ?> name="existing_patients" class="form-control" id="existing_patients" >
+						<label>Recipients Name</label>
+										<select class="selectpicker"  data-live-search="true"  <?php echo (false && isset($user_type) && $user_type==2)?"disabled":""; ?> name="existing_patients" class="form-control" id="existing_patients" >
 											<?php if(isset($patients) && !empty($patients)){
 												foreach($patients as $key=>$val) { ?>
 											<option <?php echo ((isset($orders->patient_id) && $orders->patient_id==$val->id) || isset($patient_id) && $patient_id==$val->id)?"selected":""; ?> value="<?php echo  isset($val->id)?$val->id:0; ?>" ><?php echo isset($val->first_name)?$val->first_name:"N/A"; ?></option>
@@ -410,8 +410,8 @@
 						
 					  </div>
 					  <div class="exist">
-					  <label>Device Name</label>
-						<select data-live-search="true" class="selectpicker" <?php echo (isset($user_type) && $user_type==2)?"disabled":""; ?>  name="existing_devices"  id="existing_devices" >
+					  <label>Envelope Name</label>
+						<select data-live-search="true" class="selectpicker" <?php echo (false && isset($user_type) && $user_type==2)?"disabled":""; ?>  name="existing_devices"  id="existing_devices" >
 										
 										<?php if(isset($devices) && !empty($devices)){
 											foreach($devices as $key=>$val) { ?>
@@ -436,7 +436,7 @@
 								 </div>
 					<div class="existing-patient">
 						<div class="exist">
-							<label>Patient Name</label>
+							<label>Recipients Name</label>
 							<input disabled type="text" placeholder="john" class="form-control" id="pt_name" name="pt_name">
 
 
@@ -444,7 +444,7 @@
 						</div>
 						
 						<div class="exist">
-							<label>Device Name</label>
+							<label>Envelope Name</label>
 									<input disabled type="text" placeholder="NuvaAir" class="form-control" id="dvc_name" name="dvc_name">
 
 						</div>
@@ -456,14 +456,14 @@
 							<div class="col-sm-5">
 								  <!-- text input -->
 								  <div class="form-group">
-									<label>Patient Name</label>
+									<label>Recipients Name</label>
 									<input type="text" placeholder="john" class="form-control" name="pt_name">
 								  </div>
 							</div>
 							<div class="col-sm-5">
 								  <!-- text input -->
 								  <div class="form-group">
-									<label>Device Name</label>
+									<label>Envelope Name</label>
 									<input type="text" placeholder="NuvaAir" class="form-control" name="dvc_name">
 								  </div>
 							</div>
@@ -545,18 +545,18 @@
 						
 							<div style="display:none;" class="row">
 							
-							<h3 id="patient_info_div_title" style="display:none;" class="modal-title">Patient Information</h3>
+							<h3 id="patient_info_div_title" style="display:none;" class="modal-title">Recipients Information</h3>
 							<div id="patient_info_div" style="display:none;" >
 								
 								
 							</div>
 							
-							<h6 id="patient_address_div_title" style="display:none;" >Patient Address Details</h6><br>
+							<h6 id="patient_address_div_title" style="display:none;" >Recipients Address Details</h6><br>
 							
 							<div id="patient_address_div" style="display:none;">
 							</div>
 							
-							<h6 id="patient_contact_div_title" style="display:none;" >Patient Contact Details</h6><br>
+							<h6 id="patient_contact_div_title" style="display:none;" >Recipients Contact Details</h6><br>
 							
 							<div id="patient_contact_div" style="display:none;"  >
 							</div>
@@ -587,14 +587,14 @@
 							<div class="col-sm-3">
 								  <!-- text input -->
 								  <div class="form-group">
-									<label>Patient Name</label>
+									<label>Recipients Name</label>
 									<h3>John Duo</h3>
 								  </div>
 							</div>
 							<div class="col-sm-3">
 								  <!-- text input -->
 								  <div class="form-group">
-									<label>Device Name</label>
+									<label>Envelope Name</label>
 									<h3>Nouva</h3>
 								  </div>
 							</div>
@@ -624,7 +624,7 @@
 							</div>
 						
 							<div class="row">
-							<h4 class="modal-title">Patient Information</h4>
+							<h4 class="modal-title">Recipients Information</h4>
 							<div class="col-sm-3">
 								  <!-- text input -->
 								  <div class="form-group">
@@ -685,11 +685,11 @@
 				<strong>Order Summary</strong>
 				<div class="row">
 					<div class="col-sm-4">
-						<label>Patient Name</label>
+						<label>Recipients Name</label>
 						<p id="patient_name_view" >N/A</p>
 					</div>
 					<div class="col-sm-4">
-						<label>Device Name</label>
+						<label>Envelope Name</label>
 						<p id="device_name_view" >N/A</p>
 					</div>
 				</div>
@@ -789,10 +789,11 @@
                   <tr>
                     
 					<th>Order ID</th>
-					<th>Patient Name</th>
+					<th>Recipients Name</th>
 					<th>Contact</th>
-					<th>Device Name</th>
-					<th>Device BarCode</th>
+					<th>Envelope Name</th>
+					<th>Shipping</th>
+					<th>Return Shipping</th>
 					<th>Status</th>
 					<th>Options</th>
 					
@@ -807,8 +808,9 @@
 					<td><?php echo isset($val->first_name)?$val->first_name:"N/A";?></td>
 					<td><?php echo isset($val->email)?$val->email:"N/A";?></td>
 					<td><?php echo isset($val->device_name)?$val->device_name:"N/A";?></td>
-					<td><?php echo isset($val->device_barcode)?$val->device_barcode:"N/A";?></td>
-					<td><?php 
+					<td><p><strong><?php if(isset($val->tracking_number) && $val->tracking_number!=""){?><a style="color:#007bff !important;" href="<?php echo base_url("shipping-detail/".$val->id);?>"><?php echo isset($val->tracking_number)?$val->tracking_number:"N/A"; ?></a><?php }else{ echo "N/A";} ?></strong></p></td>
+					<td><p><strong><?php if(isset($val->return_tracking_number) && $val->return_tracking_number!=""){?><a style="color:#007bff !important;" href="<?php echo base_url("shipping-detail-return/".$val->id);?>"><?php echo isset($val->return_tracking_number)?$val->return_tracking_number:"N/A"; ?></a><?php }else{ echo "N/A";} ?></strong></p></td>
+					<td><?php
 					if(isset($val->order_status) && $val->order_status=="New")
 					{
 						?>
@@ -830,10 +832,9 @@
 						  <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
 						</a>
 						<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-						  
-						  <a href="#" class="dropdown-item">Return Request</a>
+
 						  <?php  if(isset($user_type) && $user_type==2){ ?>
-						  <a href="javascript:void(0);" onclick="loadModal(<?php echo $val->id; ?>);" class="dropdown-item">Create Shipping</a>
+						  <a href="javascript:void(0);" onclick="loadModal(<?php echo $val->id; ?>);" class="dropdown-item">Create/Return Shipping</a>
 						  <a href="<?php echo base_url("order-summary/".$val->id)?>" class="dropdown-item">View</a>
 						  <?php }else{ ?>
 						  <a href="<?php echo base_url("order-summary/".$val->id)?>" class="dropdown-item">View</a>
@@ -911,7 +912,7 @@
       "ordering": true,
       "info": true,
       "autoWidth": false,
-      "responsive": true,
+      "responsive": false,
     "buttons": ["copy", "csv", "excel", "print"]
     }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
     // Event listener to the two range filtering inputs to redraw on input
@@ -1070,6 +1071,10 @@ $('#searchTable').on('keyup change', function () {
 				if($("#rush_indicator").is(":checked")){
 					rush_indicator=1;
 				}
+				var return_label = 0;
+				if($("#return_label").is(":checked")){
+                    return_label=1;
+				}
 				var directions = $("#directions").val();
 				var order_id = $("#order_id").val();
 				if(user_type!=2 && existing_patients.length == 0)
@@ -1118,6 +1123,7 @@ $('#searchTable').on('keyup change', function () {
 				order_status: order_status,
 				address: address,
 				user_type: user_type,
+                return_label: return_label,
 				order_id: order_id })
 				  .done(function( data ) {
 									$('#submit_btn').prop('disabled', false);
@@ -1336,6 +1342,7 @@ $('#searchTable').on('keyup change', function () {
 										if(true || $("#address").val()=="" || $("#address").val().length==0)
 										{
 											address_text="";
+                                            tracking_number="";
 											addresslinea_html="";
 											addresslineb_html="";
 											zipcode_html="";
@@ -1436,6 +1443,7 @@ $('#searchTable').on('keyup change', function () {
 											$("#address_usertype_2").val(address_text);
 										
 											$("#shipto_view").html(address_text);
+
 											
 											$("#address").attr("disabled","disabled");
 											$("#address").attr("display","none");
@@ -2267,6 +2275,7 @@ function loadModal(id)
 						}
 						else if(obj.status  && obj.data)
 						{
+						    $('#formDataOrder').css('display','block');
 							var data = obj.data;
 							var device_id = data.device_id;
 							var carrier_id = data.carrier_id;
@@ -2318,7 +2327,15 @@ function loadModal(id)
 							{
 								$("#rush_indicator").prop("checked", false);
 							}
-							
+                            if(data.tracking_number && data.label_download)
+                            {
+
+                                $('.tracking-slip').html('<embed src="'+data.label_download+'" width="800px" height="800px" />');
+                            }
+                            else {
+
+                                $('.tracking-slip').html('<img id="tracking-slip-id" src="<?php echo FRONT_IMG_V2; ?>shipment.jpg"/>');
+                            }
 							var attachmentValue = $('#existing_devices').val();
 							loadDevice(attachmentValue);
 							

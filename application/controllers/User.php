@@ -448,7 +448,7 @@ function encodeURIComponent($string) {
 				$sendMessage = "<p>Hello,</p><p>".$email." You successfully created an account. </p>";
 				$sendAdminMessage = "<p>Hello,</p><p>".$email." has  created an account. </p>";
 				$mailSubject="Welcome to Vectortechinc ";
-				$mailadminSubject="New Account Created on medzah ";
+				$mailadminSubject="New Account Created on SecureSign ";
 				$fromEmail='contactus@vectortechsol.com';
 				//$toEmail="waqarab85@gmail.com";
 				$toEmail=$email;

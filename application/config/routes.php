@@ -86,6 +86,7 @@ $route['edit-order/(:num)'] = 'Order/addOrder/$1';
 $route['delete-order/(:num)'] = 'Order/delete_order/$1';
 $route['order-summary/(:num)'] = 'Order/orderSummary/$1';
 $route['shipping-detail/(:num)'] = 'Order/orderTracking/$1';
+$route['shipping-detail-return/(:num)'] = 'Order/orderTrackingReturn/$1';
 $route['get-carriers-services'] = 'Order/get_carriers_services';
 $route['get-cost-estimation'] = 'Order/get_cost_estimation';
 $route['get-order-detail'] = 'Order/get_order_detail';
@@ -176,6 +177,10 @@ $route['admin/add-skill'] = 'Adminskills/addcategory';
 $route['admin/skill-submit'] = 'Adminskills/submit_category';
 $route['admin/edit-skill/(:num)'] = 'Adminskills/addcategory/$1';
 $route['admin/delete-skill/(:num)'] = 'Adminskills/delete_category/$1';
+
+
+
+$route['sign-document'] = 'Device/secureSign';
 
 
 $route['404_override'] = '';

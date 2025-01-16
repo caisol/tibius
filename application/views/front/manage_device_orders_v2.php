@@ -56,7 +56,7 @@
 						
 						<tr>
 							<td>Device Category</td>
-							<td id="Device-Category" >Remote Patient Monitoring</td>
+							<td id="Device-Category" >Remote Recipients Monitoring</td>
 						</tr>
 						
 						<tr>
@@ -142,7 +142,7 @@
                   <tr>
                    
 					<th>Order ID</th>
-					<th>Patient Name</th>
+					<th>Recipients Name</th>
 					<th>Contact</th>
 					<th>Device Name</th>
 					<th>Device BarCode</th>

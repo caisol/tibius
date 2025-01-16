@@ -41,7 +41,7 @@ class Patient extends CI_Controller {
 		
 		if(isset($id) && $id>0)
 		{
-			$record = $this->db->get_where(DB.'patients',array('status'=>1,"id"=>$id))->row();
+			$record = $this->db->get_where('recipients',array('status'=>1,"id"=>$id))->row();
 			
 			/*if(isset($record) && isset($record->id) && $record->id>0)
 			{
@@ -690,7 +690,7 @@ public function getPatient()
 		$api_data = array('address_line1'=> $address_linea,'address_line2'=> $address_lineb,'city_locality'=>$city,'state_province'=>$state,'postal_code'=>$zip_code,'country_code'=>"US");
 		
    
-		$response = callAPI("POST","http://13.48.249.120/api/shipengine/validateAddress",($api_data));
+		$response = callAPI("POST","https://api.shipengine.com/v1/addresses/validate",($api_data));
 		$return_response = array();
 		if(isset($response) && !empty($response))
 		{

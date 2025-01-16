@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 $protocol = ( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ) ? 'https' : 'http';
-define('SITE_URL', 				$protocol.'://localhost/medzahv1/');
+define('SITE_URL', 				$protocol.'://payroll.caisol.com/');
 define('DOCUMENT_ROOT', 		$_SERVER['DOCUMENT_ROOT']);
 define('RESUME_ROOT', 		FCPATH ."assets\resume".DIRECTORY_SEPARATOR );
 define('ADMIN_BOOTSTRAP', 			SITE_URL.'assets/admin/bootstrap/');
@@ -45,7 +45,7 @@ define('FRONT_D_WEBFONTS', 				SITE_URL.'assets/front/dashboard/webfonts/');
 define('RESUME_VIEW', 				SITE_URL.'assets/resume/');
 define('DB', 				'mz_');
 define('__date_time', 	date('Y-m-d H:i:s'));
-define('SITE_TITLE', 	"Medzah");
+define('SITE_TITLE', 	"SecureSign");
 
 
 

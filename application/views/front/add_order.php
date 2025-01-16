@@ -101,7 +101,7 @@
 									</div>
 									<div class="form-group col-md-5">
 										<label for="existing_patients">Select Existing Patient <span >OR</span> </label><button onclick="window.location.href='<?php echo base_url("add-patient"); ?>'" type="button" class="btn btn-primary"> Add Patient</button>
-										<select  <?php echo (isset($user_type) && $user_type==2)?"disabled":""; ?> name="existing_patients" class="form-control" id="existing_patients" >
+										<select  <?php echo (true || isset($user_type) && $user_type==2)?"disabled":""; ?> name="existing_patients" class="form-control" id="existing_patients" >
 											<?php if(isset($patients) && !empty($patients)){
 												foreach($patients as $key=>$val) { ?>
 											<option <?php echo ((isset($orders->patient_id) && $orders->patient_id==$val->id) || isset($patient_id) && $patient_id==$val->id)?"selected":""; ?> value="<?php echo  isset($val->id)?$val->id:0; ?>" ><?php echo isset($val->first_name)?$val->first_name:"N/A"; ?></option>
