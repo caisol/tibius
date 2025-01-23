@@ -236,7 +236,7 @@ class Order extends CI_Controller {
 		
 		
 		
-		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status,o.tracking_number,o.return_tracking_number FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
+		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status,o.tracking_number,o.return_tracking_number FROM mz_orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
 		$orders = $query->result();
 		
 		$data['orders'] = isset($orders)?$orders:array();
@@ -761,7 +761,7 @@ class Order extends CI_Controller {
 		p.`first_name`,p.`middle_name`,p.`last_name`,
 		p.`gfirst_name`,p.`gmiddle_name`,p.`glast_name`,p.pcheck,p.id as patient_id,
 		d.device_unit,d.device_numeric_weight,d.device_length,d.device_width,d.device_height
-		,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.id='.$order_id.' LIMIT 1');
+		,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.id='.$order_id.' LIMIT 1');
 		$ordersDetail = $query->result();
 		$service_code="";
 		if(isset($ordersDetail[0]) && !empty($ordersDetail[0]))
@@ -1006,7 +1006,7 @@ class Order extends CI_Controller {
 		p.`first_name`,p.`middle_name`,p.`last_name`,
 		p.`gfirst_name`,p.`gmiddle_name`,p.`glast_name`,p.pcheck,p.id as patient_id,
 		d.device_unit,d.device_numeric_weight,d.device_length,d.device_width,d.device_height
-		,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.id='.$order_id.' LIMIT 1');
+		,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.id='.$order_id.' LIMIT 1');
 		$ordersDetail = $query->result();
 		$service_code="";
 		$tracking_number="";
@@ -1594,7 +1594,7 @@ class Order extends CI_Controller {
 			
 			$queryOrders = $this->db->query('SELECT o.id as order_id,CONCAT(p.first_name, " ", p.last_name) AS patient_name,
 			d.device_name,o.order_date,o.order_status,o.created_at,p.email
-			FROM '.DB.'orders o LEFT JOIN '.DB.'patients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 AND order_status="'.$order_status.'" ORDER BY o.id DESC LIMIT 6');
+			FROM '.DB.'orders o LEFT JOIN '.DB.'recipients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 AND order_status="'.$order_status.'" ORDER BY o.id DESC LIMIT 6');
 		
 		}
 		else
@@ -1602,7 +1602,7 @@ class Order extends CI_Controller {
 			
 			$queryOrders = $this->db->query('SELECT o.id as order_id,CONCAT(p.first_name, " ", p.last_name) AS patient_name,
 			d.device_name,o.order_date,o.order_status,o.created_at,p.email
-			FROM '.DB.'orders o LEFT JOIN '.DB.'patients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC LIMIT 6');
+			FROM '.DB.'orders o LEFT JOIN '.DB.'recipients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC LIMIT 6');
 
 		}
 		

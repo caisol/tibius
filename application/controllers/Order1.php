@@ -83,7 +83,7 @@ class Order extends CI_Controller {
 
 		
 		
-		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
+		$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC');
 		$orders = $query->result();
 		
 		$data['orders'] = isset($orders)?$orders:array();

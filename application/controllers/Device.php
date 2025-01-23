@@ -522,7 +522,7 @@ function getDeviceOrders()
 		if(isset($device_id) && $device_id>0)
 		{
 			
-			$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN mz_patients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.device_id='.$device_id.' ORDER BY o.id DESC');
+			$query = $this->db->query('SELECT o.id ,p.`first_name`,p.`email`,d.`device_name`,d.`device_barcode`,o.order_status FROM mz_orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN mz_devices d ON d.id=o.device_id WHERE o.status=1 AND o.device_id='.$device_id.' ORDER BY o.id DESC');
 			$orders = $query->result();
 			
 			$return_response['order_data'] = isset($orders)?$orders:array();

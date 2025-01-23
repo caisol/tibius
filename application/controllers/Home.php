@@ -59,7 +59,7 @@ class Home extends CI_Controller {
 		}
 		$queryOrders = $this->db->query('SELECT o.id as order_id,CONCAT(p.first_name, " ", p.last_name) AS patient_name,
 		d.device_name,o.order_date,o.order_status,o.created_at,p.email
-		FROM '.DB.'orders o LEFT JOIN '.DB.'patients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC LIMIT 6');
+		FROM '.DB.'orders o LEFT JOIN recipients p ON p.id=o.patient_id LEFT JOIN '.DB.'devices d on d.id=o.device_id WHERE o.status=1 ORDER BY o.id DESC LIMIT 6');
 		$dataOrders = $queryOrders->result();
 		$data["dataOrders"] = $dataOrders;
 		

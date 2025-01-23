@@ -62,7 +62,7 @@ class Patient extends CI_Controller {
 		
 		
 		
-		$query = $this->db->order_by('id', 'DESC')->get_where(DB.'patients',array('status'=>1));
+		$query = $this->db->order_by('id', 'DESC')->get_where('recipients',array('status'=>1));
 		$data['total_patients'] =$total_rows  = $query->num_rows();
 		
 		
@@ -101,7 +101,7 @@ class Patient extends CI_Controller {
 									  p.`gphone_type_preferred`,
 									  p.`gemail`,
 									  p.`pcheck`, p.`department`, p.`status`, p.`created_at`,d.id as department_id,d.department_name,
-									  p.`updated_at`  FROM `mz_patients` p LEFT JOIN mz_departments d ON d.id=p.department WHERE p.status=1");
+									  p.`updated_at`  FROM `recipients` p LEFT JOIN mz_departments d ON d.id=p.department WHERE p.status=1");
 			
 			
 		$patients = $query_patients->result();
@@ -236,7 +236,7 @@ class Patient extends CI_Controller {
 				$this->db->set('department', $department);
 				$this->db->set('updated_at', __date_time);
 				$this->db->where('id', $patient_id);
-				if($this->db->update(DB.'patients'))
+				if($this->db->update('recipients'))
 				{
 					$data['patient_id'] = $patient_id;
 					$sql_patient_detail_delete = "DELETE FROM ".DB."patients_detail WHERE patient_id=".$patient_id;
@@ -381,7 +381,7 @@ class Patient extends CI_Controller {
 				'created_at'=>__date_time);
 				
 				
-				if($this->db->insert(DB.'patients',$post_data))
+				if($this->db->insert('recipients',$post_data))
 				{
 					$patient_id =  $this->db->insert_id();
 					$data['patient_id'] = $patient_id;
@@ -521,13 +521,13 @@ class Patient extends CI_Controller {
 		
 		if(isset($id) && $id>0)
 		{
-			$record = $this->db->get_where(DB.'patients',array('status'=>1,"id"=>$id))->row();
+			$record = $this->db->get_where('recipients',array('status'=>1,"id"=>$id))->row();
 			if(isset($record) && !empty($record))
 			{
 				$this->db->set('status', 0);
 				$this->db->set('updated_at', __date_time);
 				$this->db->where('id', $id);
-				if($this->db->update(DB.'patients'))
+				if($this->db->update('recipients'))
 				{
 					redirect('manage-patients?msg=Success');
 				}
@@ -543,7 +543,7 @@ class Patient extends CI_Controller {
 	{
 		if(isset($id) && $id>0)
 		{
-			$record = $this->db->get_where(DB.'patients',array('phone_number'=>$value,"id!="=>$id))->row();
+			$record = $this->db->get_where('recipients',array('phone_number'=>$value,"id!="=>$id))->row();
 			if(isset($record) && !empty($record))
 			{
 				return true;
@@ -563,7 +563,7 @@ class Patient extends CI_Controller {
 	{
 		if(isset($id) && $id>0)
 		{
-			$record = $this->db->get_where(DB.'patients',array('gemail'=>$value,"id!="=>$id))->row();
+			$record = $this->db->get_where('recipients',array('gemail'=>$value,"id!="=>$id))->row();
 			
 			if(isset($record) && !empty($record))
 			{
@@ -588,7 +588,7 @@ class Patient extends CI_Controller {
 		$return_response["status"] = "success";
 		if(isset($patient_id) && $patient_id>0)
 		{
-			$record = $this->db->get_where(DB.'patients',array("id"=>$patient_id))->result_array();
+			$record = $this->db->get_where('recipients',array("id"=>$patient_id))->result_array();
 			
 			if(isset($record) && !empty($record) && isset($record[0]) && !empty($record[0]))
 			{
@@ -620,7 +620,7 @@ public function getPatient()
 		$data['data'] = array();
 		if(isset($patint_id) && !empty($patint_id))
 		{
-			$record = $this->db->get_where(DB.'patients',array('status'=>1,"id"=>$patint_id))->result_array();
+			$record = $this->db->get_where('recipients',array('status'=>1,"id"=>$patint_id))->result_array();
 			
 			if(isset($record[0]) && isset($record[0]["id"]) && $record[0]["id"]>0)
 			{
@@ -651,7 +651,7 @@ public function getPatient()
 		$data['data'] = array();
 		if(isset($patint_id) && !empty($patint_id))
 		{
-			$record = $this->db->get_where(DB.'patients',array('status'=>1,"id"=>$patint_id))->row();
+			$record = $this->db->get_where('recipients',array('status'=>1,"id"=>$patint_id))->row();
 			
 			if(isset($record) && isset($record->id) && $record->id>0)
 			{
