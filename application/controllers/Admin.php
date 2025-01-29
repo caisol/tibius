@@ -51,14 +51,14 @@ class Admin extends CI_Controller {
 		$data['status'] = $this->form_validation->run();
 		if ($data['status'] === TRUE)
 		{
-			$post_data = array('username'=>$user_name,'password'=>md5($password));
-			$record = $this->db->get_where(DB.'admin',$post_data)->row();
+			$post_data = array('email'=>$user_name,'password'=>md5($password));
+			$record = $this->db->get_where('users',$post_data)->row();
 			
 			if ($record && !empty($record))
 			{
 				
 				$admin_id = $record->id;
-				$username = $record->username;
+				$username = "";
 				$email = $record->email;
 				$this->session->set_userdata('admin_id', $admin_id);
 				$this->session->set_userdata('admin_email', $email);

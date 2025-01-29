@@ -229,6 +229,12 @@
                   <p>All Envelope</p>
                 </a>
               </li>
+            <li class="nav-item">
+                <a href="<?php echo base_url("manage-envelope-documents");?>" class="nav-link ">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>All Envelope Documents</p>
+                </a>
+            </li>
 			  <li class="nav-item">
                 <a href="<?php echo base_url("manage-device-orders");?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
@@ -279,6 +285,18 @@
             </ul>
           </li>
 		  <?php } ?>
+
+            <?php if(true || isset($user_type) && ($user_type==2 || $user_type==1)) { ?>
+                <li class="nav-item">
+                    <a href="<?php echo base_url("manage-users");?>" class="nav-link <?php echo (isset($last_segment) && $last_segment=="users")?"active":""; ?>">
+                        <i class="nav-icon fas fa-copy"></i>
+                        <p>
+                            Users information
+
+                        </p>
+                    </a>
+                </li>
+            <?php } ?>
 		 
         </ul>
       </nav>

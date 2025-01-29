@@ -60,6 +60,9 @@ $route['terms-services'] = 'User/termsServices';
 $route['add-device'] = 'Device/addDevice';
 $route['import-device'] = 'Device/importDevice';
 $route['manage-devices'] = 'Device/manageDevice';
+
+$route['manage-envelope-documents'] = 'Device/manageEnvelopeDocuments';
+$route['recipient-documents/(:num)'] = 'Device/manageRecipientDocuments';
 $route['device-submit'] = 'Device/submitDevice';
 $route['get-device-attachments'] = 'Device/getDeviceAttachments';
 $route['edit-device/(:num)'] = 'Device/addDevice/$1';
@@ -73,7 +76,7 @@ $route['import-devices'] = 'Device/import_devices';
 $route['device-submit-import'] = 'Device/import_devices_submit';
 $route['get-device-detail'] = 'Device/getDeviceDetail';
 
-
+$route['manage-users'] = 'Users/manageUsers';
 
 
 

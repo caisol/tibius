@@ -811,6 +811,56 @@ PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
 			}
 		}
 
+
+		public  function manageEnvelopeDocuments()
+        {
+            $data=array();
+            $last = $this->uri->total_segments();
+            $record_num = $this->uri->segment($last);
+            $data['last_segment'] = "devices";
+            $data["user_type"] = $this->_userType;
+            $data["user_email"] = $this->session->userdata('user_email');
+            //where e.envelope_type="mail"
+            $query = $this->db->query('SELECT e.id as env_id,e.name as env_name,e.status as env_status,u.email FROM `envelopes` e left join users u on u.id=e.user_id ');
+            $envelopes = $query->result();
+            $data['envelopes'] = isset($envelopes)?$envelopes:array();
+            $user_id = $this->session->userdata('user_id');
+            $this->template->load('templates/template_front_home_v2', 'front/manage_envelope_documents_v2',$data);
+        }
+        public  function manageRecipientDocuments()
+        {
+            $data=array();
+            $last = $this->uri->total_segments();
+            $record_num = $this->uri->segment($last);
+            $data['last_segment'] = "devices";
+            $data["user_type"] = $this->_userType;
+            $data["user_email"] = $this->session->userdata('user_email');
+            if($record_num>0)
+            {
+                $query = $this->db->query('select dr.id as dr_id,dr.signature_position_id,dr.status as dr_status,
+                dr.is_viewed,dr.signed_file_url,dr.original_signed_file,
+                u.email,
+                d.name as document_name,d.file_path,r.first_name,r.last_name,r.email as recipient_email,
+                r.status as recipient_status,r.signature_required,
+                e.name as env_name,
+                e.id as env_id
+                
+                
+                
+                from document_recipient as dr
+                left join users u on u.id=dr.user_id
+                left join recipients r on r.id=dr.recipient_id
+                left JOIN documents d on d.id=dr.document_id and u.id=d.user_id
+                left join envelopes e on e.id=dr.envelope_id and u.id=d.user_id
+                
+                where dr.envelope_id='.$record_num.';');
+                $envelopes = $query->result();
+            }
+
+            $data['envelopes'] = isset($envelopes)?$envelopes:array();
+            $user_id = $this->session->userdata('user_id');
+            $this->template->load('templates/template_front_home_v2', 'front/manage_recipient_documents_v2',$data);
+        }
     public function secureSign()
     {
         //echo "here";
