@@ -77,6 +77,8 @@ $route['device-submit-import'] = 'Device/import_devices_submit';
 $route['get-device-detail'] = 'Device/getDeviceDetail';
 
 $route['manage-users'] = 'Users/manageUsers';
+$route['get-user-detail'] = 'Users/getUser';
+$route['user-submit'] = 'Users/submitUser';
 
 
 
